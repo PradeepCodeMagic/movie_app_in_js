@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#ccc]">
+    <div class="max-w-[1170px]  mx-auto my-[20px]">
+        <div class="w-full text-[30px] font-bold "> Movie App </div>
+        <div class=""> <input type="text" class="p-[5px] border w-[70%] mt-[20px] " id="Searchinput" > </div>
+
+        <div class="grid grid-cols-4 gap-[10px]  my-[30px] " id="mainDiv">
+
+
+        </div>
+
+        <!-- pagination -->
+        <nav aria-label="Page navigation example" class="my-[40px] text-center " >
+            <ul class="inline-flex -space-x-px text-base h-10" id="pagination" >
+              <!-- <li>
+                <a href="#" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+              </li> -->
+              
+              
+              
+              <!-- <li>
+                <a href="#" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+              </li> -->
+            </ul>
+          </nav>
+    </div>
+</body>
+
+<script>
+    let mainDiv = document.querySelector("#mainDiv")
+    
+
+    function ApiFeching(newMovie , MoviePage) {
+        let Api;
+
+        if(newMovie==undefined){
+            Api = `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=04c35731a5ee918f014970082a0088b1&page=${MoviePage || 1 }`
+        }
+        else{
+            Api =`https://api.themoviedb.org/3/search/movie?&api_key=04c35731a5ee918f014970082a0088b1&query=${newMovie}
+
+            `
+        }
+
+
+        fetch(Api)
+            .then((ress) => {
+                return ress.json()
+            })
+            .then((FinalRess) => {
+
+                let AllData = FinalRess.results;
+                mainDiv.innerHTML = ""
+                AllData.map((v, i) => {
+                    mainDiv.innerHTML += `
+                    
+    <div
+    class="max-w-sm bg-white border border-gray-200 rounded-lg shadow ">
+    <a href="#">
+        <img class="rounded-t-lg" src="https://image.tmdb.org/t/p/w1280${v.poster_path}" alt="" />
+    </a>
+    <div class="p-5">
+        <a href="#">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900"> ${v.original_title} </h5>
+        </a>
+        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400"> ${v.release_date} </p>
+        <a href="#"
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          ${v.vote_average}
+            
+        </a>
+    </div>
+</div>
+                
+                `
+                })
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+    }
+
+
+    ApiFeching()
+
+    let Searchinput=document.querySelector("#Searchinput")
+    Searchinput.addEventListener("keyup",(e)=>{
+        let newMovie=e.target.value
+
+        ApiFeching(newMovie)
+    })
+
+    // pagination
+    let pagination=document.querySelector("#pagination")
+    pagination.innerHTML=""
+    for(var i=1 ; i<=10 ; i++){
+
+        pagination.innerHTML +=`
+                <li>
+                <a href="#" class="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" onclick="moviePagination( ${i} )"  > ${i} </a>
+              </li>
+        `
+    }
+
+    function moviePagination(MoviePage){
+            ApiFeching(MoviePage)
+    }
+
+
+</script>
+
+</html>
